@@ -15,7 +15,7 @@ import {
   CardText,
   CardTitle,
   Col,
-  Row
+  Row,
 } from "reactstrap";
 import Cart from "../components/Cart/Cart";
 import defaultPage from "../hocs/defaultPage";
@@ -24,21 +24,20 @@ class Restaurants extends React.Component {
   constructor(props) {
     super(props);
   }
-  
+
   addItem(item) {
     this.props.context.addItem(item);
   }
   render() {
-   
     const {
       data: { loading, error, restaurant },
       router,
       context,
-      isAuthenticated
+      isAuthenticated,
     } = this.props;
     if (error) return "Error Loading Dishes";
-    const data = this.props.data.restaurant;
-    console.log(data,'restaurant 🔥');
+    // const restaurant = this.props.data.restaurant;
+    console.log(restaurant?.data, "restaurant dish 🔥");
     if (restaurant) {
       return (
         <>
@@ -46,11 +45,8 @@ class Restaurants extends React.Component {
           <Row>
             <Col xs="9" style={{ padding: 0 }}>
               <div style={{ display: "inline-block" }} className="h-100">
-                {restaurant.dishes.map(res => (
-                  <Card
-                    style={{ width: "30%", margin: "0 10px" }}
-                    key={res.id}
-                  >
+                {restaurant.dishes.map((res) => (
+                  <Card style={{ width: "30%", margin: "0 10px" }} key={res.id}>
                     <CardImg
                       top={true}
                       style={{ height: 250 }}
@@ -108,18 +104,28 @@ class Restaurants extends React.Component {
 }
 
 const GET_RESTAURANT_DISHES = gql`
-  query($restaurantId: ID!) {
+  query ($restaurantId: ID!) {
     restaurant(id: $restaurantId) {
+      __typename
       data {
         id
         attributes {
           Name
-          Description
-          Image {
+          dishes {
             data {
               id
               attributes {
-                url
+                name
+                description
+                price
+                image {
+                  data {
+                    id
+                    attributes {
+                      url
+                    }
+                  }
+                }
               }
             }
           }
@@ -136,13 +142,13 @@ export default compose(
   defaultPage,
   withContext,
   graphql(GET_RESTAURANT_DISHES, {
-    options: props => {
+    options: (props) => {
       return {
         variables: {
-          restaurantId: props.router.query.id
-        }
+          restaurantId: props.router.query.id,
+        },
       };
     },
-    props: ({ data }) => ({ data })
+    props: ({ data }) => ({ data }),
   })
 )(Restaurants);

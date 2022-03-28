@@ -26,6 +26,7 @@ const RestaurantList = (
     const searchQuery = data.filter(query =>
       query.attributes.Name.toLowerCase().includes(search)
     );
+    console.log(searchQuery[0], '🔥');
     if (searchQuery.length != 0) {
       return (
         <div>
@@ -42,8 +43,8 @@ const RestaurantList = (
                   src={`http://localhost:1337${res.attributes.Image.data.attributes.url}`}
                 />
                 <CardBody>
-                  <CardTitle>{res.name}</CardTitle>
-                  <CardText>{res.description}</CardText>
+                  <CardTitle>{res.attributes.Name}</CardTitle>
+                  <CardText>{res.attributes.Description}</CardText>
                 </CardBody>
                 <div className="card-footer">
                   <Link
